@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MFB Dual Dx Screener — Rehab Access</title>
+  <style>
+    :root {
+      --navy: #002855;
+      --gold: #C4922A;
+      --gold-light: #F5E6CC;
+      --red: #C0392B;
+      --yellow: #D68910;
+      --green: #1E8449;
+      --bg: #F4F6F8;
+      --white: #FFFFFF;
+      --text: #1A1A2E;
+      --border: #CBD5E0;
+      --shadow: 0 2px 8px rgba(0,0,0,0.09);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.5; }
+
+    .phi-banner { background: #6E0000; color: white; text-align: center; padding: 9px 16px; font-weight: 700; font-size: 13px; letter-spacing: 0.05em; position: sticky; top: 0; z-index: 100; }
+
+    header { background: var(--navy); color: white; padding: 16px 20px; display: flex; align-items: center; gap: 14px; }
+    .header-logo { width: 46px; height: 46px; background: var(--gold); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 15px; color: var(--navy); flex-shrink: 0; line-height: 1.1; text-align: center; }
+    header h1 { font-size: 18px; font-weight: 700; line-height: 1.2; }
+    header p { font-size: 12px; opacity: 0.75; margin-top: 2px; }
+
+    main { max-width: 720px; margin: 0 auto; padding: 20px 14px 48px; }
+
+    .card { background: var(--white); border-radius: 10px; box-shadow: var(--shadow); padding: 20px; margin-bottom: 16px; border-left: 4px solid var(--navy); }
+    .card h2 { font-size: 13px; font-weight: 800; color: var(--navy); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .card h2 .num { background: var(--navy); color: white; width: 22px; height: 22px; border-radius: 50%; font-size: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .helper { font-size: 12px; color: #667; margin-bottom: 12px; }
+
+    .check-group { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 8px; }
+    .check-item { display: flex; align-items: flex-start; gap: 8px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; transition: background 0.12s; }
+    .check-item:hover { background: #F0F4F8; }
+    .check-item input[type="checkbox"] { margin-top: 2px; accent-color: var(--navy); flex-shrink: 0; width: 15px; height: 15px; }
+    .check-item span { font-size: 13.5px; line-height: 1.35; cursor: pointer; }
+    .check-item.red-flag { border-color: #EAB0B0; background: #FFF8F8; }
+
+    .field-label { font-size: 12.5px; font-weight: 700; color: #445; margin-bottom: 6px; margin-top: 14px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .radio-group { display: flex; flex-wrap: wrap; gap: 7px; }
+    .radio-btn { display: flex; align-items: center; gap: 6px; padding: 7px 14px; border: 1.5px solid var(--border); border-radius: 20px; cursor: pointer; font-size: 13.5px; transition: all 0.12s; }
+    .radio-btn input { accent-color: var(--navy); flex-shrink: 0; }
+    .radio-btn:has(input:checked) { background: var(--navy); color: white; border-color: var(--navy); }
+
+    .divider { border: none; border-top: 1px solid #E8ECF0; margin: 14px 0; }
+
+    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+    .btn { padding: 11px 22px; border: none; border-radius: 7px; font-size: 14px; font-weight: 700; cursor: pointer; transition: opacity 0.15s; }
+    .btn:hover { opacity: 0.85; }
+    .btn:active { opacity: 0.7; }
+    .btn-primary { background: var(--navy); color: white; }
+    .btn-gold { background: var(--gold); color: white; }
+    .btn-outline { background: white; color: var(--navy); border: 2px solid var(--navy); }
+
+    #results { display: none; }
+    .tier-banner { border-radius: 10px; padding: 18px 22px; margin-bottom: 16px; text-align: center; }
+    .tier-banner.standard { background: #EAF7EF; border: 2px solid var(--green); }
+    .tier-banner.elevated { background: #FEF9E7; border: 2px solid var(--yellow); }
+    .tier-banner.complex  { background: #FDECEA; border: 2px solid var(--red); }
+    .tier-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.6; }
+    .tier-name { font-size: 28px; font-weight: 900; margin: 5px 0 4px; }
+    .tier-banner.standard .tier-name { color: var(--green); }
+    .tier-banner.elevated .tier-name { color: var(--yellow); }
+    .tier-banner.complex  .tier-name { color: var(--red); }
+    .tier-sub { font-size: 13px; color: #444; max-width: 520px; margin: 0 auto; }
+
+    .flags-list, .actions-list { list-style: none; padding: 0; }
+    .flags-list li { padding: 8px 10px; border-radius: 6px; margin-bottom: 7px; font-size: 13.5px; display: flex; align-items: flex-start; gap: 9px; }
+    .flags-list li.flag-red { background: #FDECEA; border-left: 3px solid var(--red); }
+    .flags-list li.flag-yellow { background: #FEF9E7; border-left: 3px solid var(--yellow); }
+    .flags-list li.flag-green { background: #EAF7EF; border-left: 3px solid var(--green); color: #1A6B35; }
+    .actions-list li { padding: 7px 0; font-size: 13.5px; border-bottom: 1px solid #EEF1F5; display: flex; align-items: flex-start; gap: 9px; }
+    .actions-list li:last-child { border-bottom: none; }
+
+    .smartphrase-box { background: #F8F9FA; border: 1px solid var(--border); border-radius: 8px; padding: 14px; font-family: 'Courier New', monospace; font-size: 11.5px; white-space: pre-wrap; line-height: 1.65; max-height: 280px; overflow-y: auto; }
+    .copy-success { color: var(--green); font-size: 13px; font-weight: 700; display: none; margin-left: 10px; align-self: center; }
+
+    @media (max-width: 500px) {
+      .check-group { grid-template-columns: 1fr; }
+      header h1 { font-size: 15px; }
+      .tier-name { font-size: 22px; }
+      .btn { padding: 10px 16px; font-size: 13px; }
+    }
+
+    @media print {
+      .phi-banner { position: static; }
+      .btn-row { display: none !important; }
+      .card { box-shadow: none; border: 1px solid #CCC; page-break-inside: avoid; }
+      #results { display: block !important; }
+      .smartphrase-box { max-height: none; border: 1px solid #CCC; }
+      body { background: white; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="phi-banner" role="alert" aria-live="assertive">
+  DO NOT ENTER PROTECTED HEALTH INFORMATION (PHI) — For clinical decision support only. No data is stored.
+</div>
+
+<header>
+  <div class="header-logo" aria-hidden="true">MFB</div>
+  <div>
+    <h1>Dual Diagnosis Screener</h1>
+    <p>Inpatient Rehab Access · Behavioral Health Complexity · Wk 28</p>
+  </div>
+</header>
+
+<main>
+
+  <div class="card">
+    <h2><span class="num" aria-hidden="true">1</span> Psychiatric History</h2>
+    <p class="helper">Select all known or documented psychiatric diagnoses from chart or referral documentation.</p>
+    <div class="check-group">
+      <label class="check-item"><input type="checkbox" name="psych" value="depression"><span>Major Depression / MDD</span></label>
+      <label class="check-item"><input type="checkbox" name="psych" value="anxiety"><span>Anxiety Disorder (GAD, Panic, Social)</span></label>
+      <label class="check-item"><input type="checkbox" name="psych" value="bipolar"><span>Bipolar Disorder (I or II)</span></label>
+      <label class="check-item"><input type="checkbox" name="psych" value="schizophrenia"><span>Schizophrenia / Schizoaffective</span></label>
+      <label class="check-item"><input type="checkbox" name="psych" value="ptsd"><span>PTSD</span></label>
+      <label class="check-item"><input type="checkbox" name="psych" value="personality"><span>Personality Disorder (BPD, ASPD, other)</span></label>
+      <label class="check-item"><input type="checkbox" name="psych" value="ocd"><span>OCD / OC-spectrum</span></label>
+      <label class="check-item"><input type="checkbox" name="psych" value="eating"><span>Eating Disorder</span></label>
+      <label class="check-item"><input type="checkbox" name="psych" value="other_psych"><span>Other psychiatric diagnosis</span></label>
+      <label class="check-item"><input type="checkbox" name="psych" value="none_psych"><span>No known psychiatric history</span></label>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num" aria-hidden="true">2</span> Substance Use History</h2>
+    <div class="check-group">
+      <label class="check-item"><input type="checkbox" name="sud" value="alcohol"><span>Alcohol use disorder / heavy use</span></label>
+      <label class="check-item"><input type="checkbox" name="sud" value="opioid"><span>Opioid use disorder / dependence</span></label>
+      <label class="check-item"><input type="checkbox" name="sud" value="benzo"><span>Benzodiazepine dependence</span></label>
+      <label class="check-item"><input type="checkbox" name="sud" value="stimulant"><span>Stimulant use (cocaine, meth)</span></label>
+      <label class="check-item"><input type="checkbox" name="sud" value="cannabis"><span>Cannabis use disorder</span></label>
+      <label class="check-item"><input type="checkbox" name="sud" value="poly"><span>Polysubstance use / dependence</span></label>
+      <label class="check-item"><input type="checkbox" name="sud" value="none_sud"><span>No known substance use history</span></label>
+    </div>
+    <hr class="divider">
+    <div class="field-label">Withdrawal risk at time of screening</div>
+    <div class="radio-group">
+      <label class="radio-btn"><input type="radio" name="withdrawal" value="none"><span>None / N/A</span></label>
+      <label class="radio-btn"><input type="radio" name="withdrawal" value="low"><span>Low (stable, on MAT)</span></label>
+      <label class="radio-btn"><input type="radio" name="withdrawal" value="moderate"><span>Moderate (monitoring in place)</span></label>
+      <label class="radio-btn"><input type="radio" name="withdrawal" value="high"><span>High / Active (CIWA or COWS concern)</span></label>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num" aria-hidden="true">3</span> Current Behavioral Status</h2>
+    <div class="field-label">Suicidal ideation / self-harm status</div>
+    <div class="radio-group">
+      <label class="radio-btn"><input type="radio" name="si" value="none"><span>None documented</span></label>
+      <label class="radio-btn"><input type="radio" name="si" value="historical"><span>Historical only — no active SI</span></label>
+      <label class="radio-btn"><input type="radio" name="si" value="passive"><span>Passive / vague — no plan</span></label>
+      <label class="radio-btn"><input type="radio" name="si" value="active"><span>Active SI or recent attempt</span></label>
+    </div>
+    <hr class="divider">
+    <div class="field-label">Recent inpatient psychiatric hospitalization</div>
+    <div class="radio-group">
+      <label class="radio-btn"><input type="radio" name="psych_admit" value="none"><span>None</span></label>
+      <label class="radio-btn"><input type="radio" name="psych_admit" value="over6mo"><span>&gt; 6 months ago</span></label>
+      <label class="radio-btn"><input type="radio" name="psych_admit" value="3to6mo"><span>3–6 months ago</span></label>
+      <label class="radio-btn"><input type="radio" name="psych_admit" value="1to3mo"><span>1–3 months ago</span></label>
+      <label class="radio-btn"><input type="radio" name="psych_admit" value="under30d"><span>&lt; 30 days ago</span></label>
+    </div>
+    <hr class="divider">
+    <div class="field-label">Cognitive / neurological complicating factors</div>
+    <div class="check-group">
+      <label class="check-item"><input type="checkbox" name="cog" value="delirium"><span>Delirium (active or recent)</span></label>
+      <label class="check-item"><input type="checkbox" name="cog" value="dementia"><span>Dementia / MCI</span></label>
+      <label class="check-item"><input type="checkbox" name="cog" value="tbi"><span>TBI (history or current)</span></label>
+      <label class="check-item"><input type="checkbox" name="cog" value="idd"><span>Intellectual / Developmental Disability</span></label>
+      <label class="check-item"><input type="checkbox" name="cog" value="none_cog"><span>No cognitive concerns noted</span></label>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num" aria-hidden="true">4</span> Behavioral Incidents — Acute Stay</h2>
+    <div class="check-group">
+      <label class="check-item red-flag"><input type="checkbox" name="incidents" value="aggression"><span>Physical aggression toward staff or others</span></label>
+      <label class="check-item red-flag"><input type="checkbox" name="incidents" value="seclusion"><span>Required seclusion or physical restraint</span></label>
+      <label class="check-item"><input type="checkbox" name="incidents" value="elopement"><span>Elopement or unsafe wandering</span></label>
+      <label class="check-item"><input type="checkbox" name="incidents" value="verbal_threat"><span>Verbal threats or intimidating behavior</span></label>
+      <label class="check-item"><input type="checkbox" name="incidents" value="refusal"><span>Persistent refusal of care</span></label>
+      <label class="check-item"><input type="checkbox" name="incidents" value="none_inc"><span>No behavioral incidents reported</span></label>
+    </div>
+    <hr class="divider">
+    <div class="field-label">Inpatient psychiatric consult obtained during acute stay?</div>
+    <div class="radio-group">
+      <label class="radio-btn"><input type="radio" name="psych_consult" value="yes_stable"><span>Yes — stable with documented plan</span></label>
+      <label class="radio-btn"><input type="radio" name="psych_consult" value="yes_pending"><span>Yes — recommendations pending</span></label>
+      <label class="radio-btn"><input type="radio" name="psych_consult" value="no"><span>No consult obtained</span></label>
+      <label class="radio-btn"><input type="radio" name="psych_consult" value="na"><span>N/A — no psychiatric concerns</span></label>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num" aria-hidden="true">5</span> Support System &amp; Readiness</h2>
+    <div class="field-label">Social / caregiver support for behavioral management</div>
+    <div class="radio-group">
+      <label class="radio-btn"><input type="radio" name="support" value="strong"><span>Strong — engaged family / caregiver with plan</span></label>
+      <label class="radio-btn"><input type="radio" name="support" value="moderate"><span>Moderate — some support, needs coordination</span></label>
+      <label class="radio-btn"><input type="radio" name="support" value="limited"><span>Limited — minimal support</span></label>
+      <label class="radio-btn"><input type="radio" name="support" value="isolated"><span>None — socially isolated</span></label>
+    </div>
+    <hr class="divider">
+    <div class="field-label">Psychotropic medications (approximate count)</div>
+    <div class="radio-group">
+      <label class="radio-btn"><input type="radio" name="meds" value="0"><span>None</span></label>
+      <label class="radio-btn"><input type="radio" name="meds" value="1-2"><span>1–2 agents</span></label>
+      <label class="radio-btn"><input type="radio" name="meds" value="3plus"><span>3 or more agents</span></label>
+    </div>
+    <hr class="divider">
+    <div class="field-label">Patient's stated willingness to engage in rehab therapy</div>
+    <div class="radio-group">
+      <label class="radio-btn"><input type="radio" name="engagement" value="eager"><span>Eager / motivated</span></label>
+      <label class="radio-btn"><input type="radio" name="engagement" value="cooperative"><span>Cooperative</span></label>
+      <label class="radio-btn"><input type="radio" name="engagement" value="ambivalent"><span>Ambivalent / unsure</span></label>
+      <label class="radio-btn"><input type="radio" name="engagement" value="resistant"><span>Resistant / refusing</span></label>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="calculate()">Calculate Risk Tier</button>
+    <button class="btn btn-outline" onclick="resetForm()">Reset</button>
+  </div>
+
+  <div id="results">
+    <div id="tier-banner" class="tier-banner" role="region" aria-live="polite" aria-label="Risk Tier Result">
+      <div class="tier-label">Dual Dx Risk Tier</div>
+      <div class="tier-name" id="tier-name"></div>
+      <div class="tier-sub" id="tier-sub"></div>
+    </div>
+
+    <div class="card">
+      <h2>Identified Flags</h2>
+      <ul class="flags-list" id="flags-list"></ul>
+    </div>
+
+    <div class="card">
+      <h2>Recommended Pre-Admission Actions</h2>
+      <ul class="actions-list" id="actions-list"></ul>
+    </div>
+
+    <div class="card">
+      <h2>Epic SmartPhrase</h2>
+      <p style="font-size:12px;color:#777;margin-bottom:8px;">Copy into Epic and add clinician name, date, and primary diagnosis before signing. Trigger: <strong>.MFBDUALDXSCREEN</strong></p>
+      <div class="smartphrase-box" id="smartphrase-box" role="textbox" aria-label="Epic SmartPhrase text" aria-readonly="true"></div>
+      <div class="btn-row" style="margin-top:12px;align-items:center;">
+        <button class="btn btn-gold" onclick="copySmartPhrase()">Copy as Epic SmartPhrase</button>
+        <span class="copy-success" id="copy-success">Copied to clipboard</span>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-outline" onclick="window.print()">Print / Save PDF</button>
+      <button class="btn btn-outline" onclick="resetForm()">Screen Another Patient</button>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  function getCheckboxGroup(name) {
+    return [...document.querySelectorAll('input[name="' + name + '"]:checked')].map(function(i) { return i.value; });
+  }
+  function getRadio(name) {
+    var el = document.querySelector('input[name="' + name + '"]:checked');
+    return el ? el.value : null;
+  }
+
+  var PSYCH_LABELS = { depression: 'MDD/Depression', anxiety: 'Anxiety Disorder', bipolar: 'Bipolar Disorder', schizophrenia: 'Schizophrenia/Schizoaffective', ptsd: 'PTSD', personality: 'Personality Disorder', ocd: 'OCD/OC-spectrum', eating: 'Eating Disorder', other_psych: 'Other Psych Dx' };
+  var SUD_LABELS = { alcohol: 'Alcohol use disorder', opioid: 'Opioid use disorder', benzo: 'Benzodiazepine dependence', stimulant: 'Stimulant use disorder', cannabis: 'Cannabis use disorder', poly: 'Polysubstance dependence' };
+  var COG_LABELS = { delirium: 'Active/Recent Delirium', dementia: 'Dementia/MCI', tbi: 'TBI', idd: 'Intellectual/Developmental Disability' };
+  var INC_LABELS = { aggression: 'Physical aggression', seclusion: 'Seclusion/restraint required', elopement: 'Elopement risk', verbal_threat: 'Verbal threats', refusal: 'Persistent refusal of care' };
+
+  function labelMap(vals, map, exclude) {
+    return vals.filter(function(v) { return v !== exclude; }).map(function(v) { return map[v] || v; }).join(', ');
+  }
+
+  function calculate() {
+    var psych       = getCheckboxGroup('psych');
+    var sud         = getCheckboxGroup('sud');
+    var cog         = getCheckboxGroup('cog');
+    var incidents   = getCheckboxGroup('incidents');
+    var withdrawal  = getRadio('withdrawal');
+    var si          = getRadio('si');
+    var psych_admit = getRadio('psych_admit');
+    var psych_consult = getRadio('psych_consult');
+    var support     = getRadio('support');
+    var meds        = getRadio('meds');
+    var engagement  = getRadio('engagement');
+
+    var redFlags = [], yellowFlags = [], actions = [];
+
+    var hasPsych     = psych.length > 0 && !psych.includes('none_psych');
+    var hasSUD       = sud.length > 0   && !sud.includes('none_sud');
+    var hasCog       = cog.length > 0   && !cog.includes('none_cog');
+    var hasIncidents = incidents.length > 0 && !incidents.includes('none_inc');
+
+    // RED flags
+    if (si === 'active') {
+      redFlags.push('Active suicidal ideation or recent self-harm attempt documented');
+      actions.push('Obtain or verify formal psychiatric clearance before transfer to MFB');
+      actions.push('Complete Columbia Suicide Severity Rating Scale (C-SSRS) via consult; share results with MFB admitting team');
+      actions.push('Notify MFB Medical Director, Charge Nurse, and Social Work before admission date');
+    }
+    if (withdrawal === 'high') {
+      redFlags.push('High-risk or active withdrawal (CIWA/COWS concern at sending facility)');
+      actions.push('Delay transfer until withdrawal is medically stable — obtain CIWA/COWS trending data from sending team');
+      actions.push('Confirm MFB pharmacy can continue withdrawal protocol (alcohol, benzo, opioid as applicable)');
+    }
+    if (psych_admit === 'under30d') {
+      redFlags.push('Inpatient psychiatric hospitalization within the past 30 days');
+      actions.push('Request and review psych discharge summary and current outpatient psychiatric follow-up plan');
+      actions.push('Confirm stability with treating psychiatrist before scheduling MFB admission');
+    }
+    if (incidents.includes('aggression')) {
+      redFlags.push('Physical aggression toward staff or others documented during acute stay');
+      actions.push('Obtain detailed behavioral incident report(s) from sending facility');
+      actions.push('Discuss 1:1 monitoring needs with MFB Medical Director and Charge Nurse before admission');
+      actions.push('Establish written behavioral management plan prior to day-of-admit — do not defer to day of arrival');
+    }
+    if (incidents.includes('seclusion')) {
+      redFlags.push('Required seclusion or physical restraint during acute stay');
+      actions.push('Evaluate whether MFB behavioral capacity is appropriate — consider alternative LOC or psych step-down first');
+    }
+
+    // YELLOW flags
+    if (hasPsych) {
+      yellowFlags.push('Psychiatric history: ' + labelMap(psych, PSYCH_LABELS, 'none_psych'));
+    }
+    if (hasSUD) {
+      yellowFlags.push('Substance use history: ' + labelMap(sud, SUD_LABELS, 'none_sud'));
+      actions.push('Review MAT regimen (buprenorphine, methadone, naltrexone) and confirm continuation plan at MFB with pharmacy');
+    }
+    if (withdrawal === 'moderate') {
+      yellowFlags.push('Moderate withdrawal risk — monitoring in place at sending facility');
+      actions.push('Obtain most recent CIWA/COWS scores and trend before scheduled transfer date');
+    }
+    if (si === 'historical') {
+      yellowFlags.push('Historical suicidal ideation or self-harm (no active SI currently documented)');
+      actions.push('Confirm safety planning status and psychiatric follow-up plan at discharge from acute facility');
+    }
+    if (si === 'passive') {
+      yellowFlags.push('Passive or vague suicidal ideation documented — no active plan reported');
+      actions.push('Request formal psychiatric consult at sending facility if not already completed');
+      actions.push('Establish safety monitoring approach with MFB care team before admission date');
+    }
+    if (psych_admit === '1to3mo') {
+      yellowFlags.push('Psychiatric hospitalization 1–3 months prior to referral');
+      actions.push('Request psychiatric discharge summary and document current stability status');
+    }
+    if (psych_admit === '3to6mo') {
+      yellowFlags.push('Psychiatric hospitalization 3–6 months prior — monitor for re-decompensation risk');
+    }
+    if (hasCog) {
+      yellowFlags.push('Cognitive/neurological factors: ' + labelMap(cog, COG_LABELS, 'none_cog'));
+      if (cog.includes('delirium')) {
+        actions.push('Confirm delirium resolved or clinically managed before rehab-intensity participation — request CAM score from sending team');
+      }
+      if (cog.includes('idd')) {
+        actions.push('Assess IDD-specific communication and behavioral support needs; engage MFB Social Work and case management');
+      }
+    }
+    if (hasIncidents && !incidents.includes('aggression') && !incidents.includes('seclusion')) {
+      yellowFlags.push('Behavioral incidents noted during acute stay: ' + labelMap(incidents, INC_LABELS, 'none_inc'));
+      if (incidents.includes('elopement')) {
+        actions.push('Evaluate elopement precaution level required — confirm MFB environmental support capacity');
+      }
+      if (incidents.includes('refusal')) {
+        actions.push('Discuss refusal pattern with referring team; consider motivational readiness before confirming admission');
+      }
+    }
+    if (psych_consult === 'yes_pending') {
+      yellowFlags.push('Inpatient psychiatric consult obtained but recommendations pending');
+      actions.push('Follow up with sending team for psychiatry recommendations before MFB admission date');
+    }
+    if (psych_consult === 'no' && (hasPsych || hasSUD || hasIncidents)) {
+      yellowFlags.push('No psychiatric consult obtained despite documented behavioral/psychiatric concerns');
+      actions.push('Recommend psychiatric consult at sending facility before transfer — document response from referring team');
+    }
+    if (meds === '3plus') {
+      yellowFlags.push('Three or more psychotropic medications — complex pharmacological regimen');
+      actions.push('MFB pharmacy review of full psychotropic medication list on day of admit; reconcile with sending facility discharge med list');
+    }
+    if (support === 'isolated') {
+      yellowFlags.push('Patient socially isolated — no caregiver or support network for behavioral management');
+      actions.push('MFB Social Work consult to assess community mental health linkage and discharge planning needs before admission');
+    } else if (support === 'limited') {
+      yellowFlags.push('Limited social/caregiver support system for behavioral management needs');
+    }
+    if (engagement === 'resistant') {
+      yellowFlags.push('Patient reported resistant to or refusing rehab participation');
+      actions.push('Revisit rehab candidacy — discuss motivational approach with referring team before scheduling admission');
+    } else if (engagement === 'ambivalent') {
+      yellowFlags.push('Patient ambivalent about rehab engagement');
+      actions.push('Address ambivalence with brief motivational conversation at admission; document goal setting in first 24h');
+    }
+
+    // Tier determination
+    var tier, tierSub, tierClass;
+    if (redFlags.length > 0) {
+      tier = 'COMPLEX'; tierClass = 'complex';
+      tierSub = 'Significant behavioral health barriers require resolution or formal management plan BEFORE inpatient rehab admission.';
+    } else if (yellowFlags.length >= 3) {
+      tier = 'ELEVATED'; tierClass = 'elevated';
+      tierSub = 'Multiple behavioral health factors present. Proceed with targeted pre-admission planning, team notification, and precautions.';
+    } else if (yellowFlags.length > 0) {
+      tier = 'MONITOR'; tierClass = 'elevated';
+      tierSub = 'Behavioral health factors identified. Document, communicate to MFB team, and monitor proactively during admission.';
+    } else {
+      tier = 'STANDARD'; tierClass = 'standard';
+      tierSub = 'No significant dual-diagnosis factors identified at this screen. Proceed with standard admission workflow.';
+    }
+
+    if (actions.length === 0) {
+      actions.push('Proceed with standard pre-admission workflow');
+      actions.push('Document screen completion in access or liaison note');
+    } else {
+      actions.push('Document screen findings in liaison/access note and communicate directly to MFB admitting charge nurse');
+    }
+
+    // Build SmartPhrase
+    var psychStr    = psych.includes('none_psych') ? 'None documented' : (labelMap(psych, PSYCH_LABELS, 'none_psych') || 'Not assessed');
+    var sudStr      = sud.includes('none_sud')   ? 'None documented' : (labelMap(sud, SUD_LABELS, 'none_sud')   || 'Not assessed');
+    var cogStr      = cog.includes('none_cog')   ? 'None documented' : (labelMap(cog, COG_LABELS, 'none_cog')   || 'Not assessed');
+    var incStr      = incidents.includes('none_inc') ? 'None reported'  : (labelMap(incidents, INC_LABELS, 'none_inc') || 'Not assessed');
+    var withdraw_l  = { none: 'None / N/A', low: 'Low (stable / on MAT)', moderate: 'Moderate (monitoring)', high: 'HIGH — CIWA/COWS concern' };
+    var si_l        = { none: 'None documented', historical: 'Historical only', passive: 'Passive / vague (no plan)', active: 'ACTIVE SI or recent attempt' };
+    var admit_l     = { none: 'None', over6mo: '> 6 months ago', '3to6mo': '3–6 months ago', '1to3mo': '1–3 months ago', under30d: '< 30 days ago — RECENT' };
+    var consult_l   = { yes_stable: 'Yes — stable, plan documented', yes_pending: 'Yes — recommendations pending', no: 'No consult obtained', na: 'N/A' };
+    var support_l   = { strong: 'Strong', moderate: 'Moderate', limited: 'Limited', isolated: 'None — isolated' };
+    var meds_l      = { '0': 'None', '1-2': '1–2 agents', '3plus': '3 or more agents' };
+    var engage_l    = { eager: 'Eager/motivated', cooperative: 'Cooperative', ambivalent: 'Ambivalent', resistant: 'Resistant/refusing' };
+
+    var flagSection = [
+      redFlags.map(function(f) { return '  [RED]  ' + f; }),
+      yellowFlags.map(function(f) { return '  [YLW] ' + f; })
+    ].flat().join('\n') || '  None identified';
+
+    var actionSection = actions.map(function(a, i) { return '  ' + (i + 1) + '. ' + a; }).join('\n');
+
+    var sp = '.MFBDUALDXSCREEN\n'
+      + '='.repeat(42) + '\n'
+      + 'MFB DUAL DIAGNOSIS SCREENING\n'
+      + 'Inpatient Rehab Access Evaluation\n'
+      + '='.repeat(42) + '\n\n'
+      + 'DATE: [DATE]  |  SCREENER: [NAME, CREDENTIALS]\n'
+      + 'PRIMARY REHAB DX: [PRIMARY DIAGNOSIS]\n\n'
+      + 'BEHAVIORAL HEALTH FLAGS:\n' + flagSection + '\n\n'
+      + 'DUAL DX RISK TIER: ' + tier + '\n'
+      + tierSub + '\n\n'
+      + 'PRE-ADMISSION ACTIONS:\n' + actionSection + '\n\n'
+      + '--- SCREEN DATA ---\n'
+      + 'PSYCH HISTORY:       ' + psychStr + '\n'
+      + 'SUBSTANCE USE:       ' + sudStr + '\n'
+      + 'WITHDRAWAL RISK:     ' + (withdraw_l[withdrawal] || 'Not assessed') + '\n'
+      + 'SI STATUS:           ' + (si_l[si] || 'Not assessed') + '\n'
+      + 'PSYCH ADMIT <6MO:    ' + (admit_l[psych_admit] || 'Not assessed') + '\n'
+      + 'PSYCH CONSULT:       ' + (consult_l[psych_consult] || 'Not assessed') + '\n'
+      + 'BEHAVIORAL INCIDENTS:' + incStr + '\n'
+      + 'COGNITIVE FACTORS:   ' + cogStr + '\n'
+      + 'PSYCHOTROPIC MEDS:   ' + (meds_l[meds] || 'Not assessed') + '\n'
+      + 'SUPPORT SYSTEM:      ' + (support_l[support] || 'Not assessed') + '\n'
+      + 'ENGAGEMENT:          ' + (engage_l[engagement] || 'Not assessed') + '\n\n'
+      + 'Screened using MFB Dual Dx Screener v1.0 (Wk 28)\n'
+      + '[PHI must not be entered into this screening tool]';
+
+    // Render results
+    var tierBanner = document.getElementById('tier-banner');
+    tierBanner.className = 'tier-banner ' + tierClass;
+    document.getElementById('tier-name').textContent = tier;
+    document.getElementById('tier-sub').textContent = tierSub;
+
+    var fl = document.getElementById('flags-list');
+    fl.innerHTML = '';
+    redFlags.forEach(function(f) {
+      var li = document.createElement('li');
+      li.className = 'flag-red';
+      li.innerHTML = '<span style="font-size:15px;flex-shrink:0" aria-hidden="true">&#9940;</span><span>' + f + '</span>';
+      fl.appendChild(li);
+    });
+    yellowFlags.forEach(function(f) {
+      var li = document.createElement('li');
+      li.className = 'flag-yellow';
+      li.innerHTML = '<span style="font-size:15px;flex-shrink:0" aria-hidden="true">&#9888;</span><span>' + f + '</span>';
+      fl.appendChild(li);
+    });
+    if (redFlags.length === 0 && yellowFlags.length === 0) {
+      var li = document.createElement('li');
+      li.className = 'flag-green';
+      li.innerHTML = '<span style="font-size:15px;flex-shrink:0" aria-hidden="true">&#10003;</span><span>No significant behavioral health flags identified at this screen.</span>';
+      fl.appendChild(li);
+    }
+
+    var al = document.getElementById('actions-list');
+    al.innerHTML = '';
+    actions.forEach(function(a) {
+      var li = document.createElement('li');
+      li.innerHTML = '<span style="color:var(--navy);font-size:17px;flex-shrink:0;line-height:1" aria-hidden="true">&#8250;</span><span>' + a + '</span>';
+      al.appendChild(li);
+    });
+
+    document.getElementById('smartphrase-box').textContent = sp;
+
+    var res = document.getElementById('results');
+    res.style.display = 'block';
+    setTimeout(function() { res.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
+  }
+
+  function copySmartPhrase() {
+    var text = document.getElementById('smartphrase-box').textContent;
+    navigator.clipboard.writeText(text).then(function() {
+      var el = document.getElementById('copy-success');
+      el.style.display = 'inline';
+      setTimeout(function() { el.style.display = 'none'; }, 2800);
+    }).catch(function() {
+      var box = document.getElementById('smartphrase-box');
+      box.focus();
+      var range = document.createRange();
+      range.selectNodeContents(box);
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
+    });
+  }
+
+  function resetForm() {
+    document.querySelectorAll('input[type="checkbox"]').forEach(function(c) { c.checked = false; });
+    document.querySelectorAll('input[type="radio"]').forEach(function(r) { r.checked = false; });
+    document.getElementById('results').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
