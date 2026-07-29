@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:#F4F6F9;margin:0;padding:0;}
+.wrap{max-width:680px;margin:0 auto;background:#fff;border:1px solid #D0D8E4;border-radius:8px;overflow:hidden;}
+.hdr{background:#1B3A5C;padding:24px 28px;}
+.hdr-inner{display:flex;align-items:center;gap:14px;}
+.logo{background:#C8952A;color:#1B3A5C;font-weight:900;font-size:18px;padding:6px 10px;border-radius:4px;}
+.hdr h1{color:#fff;font-size:20px;margin:0;line-height:1.3;}
+.hdr p{color:rgba(255,255,255,0.7);font-size:12px;margin:4px 0 0;}
+.phi{background:#CC0000;color:#fff;text-align:center;padding:8px;font-size:12px;font-weight:700;letter-spacing:0.05em;}
+.body{padding:24px 28px;}
+.section{margin-bottom:24px;}
+h2{color:#1B3A5C;font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;border-bottom:2px solid #C8952A;padding-bottom:6px;margin-bottom:12px;}
+p{color:#1A2535;font-size:14px;line-height:1.6;margin-bottom:10px;}
+table{width:100%;border-collapse:collapse;margin-bottom:12px;font-size:13px;}
+th{background:#1B3A5C;color:#fff;padding:8px 10px;text-align:left;}
+td{padding:7px 10px;border-bottom:1px solid #E8ECF2;}
+tr:nth-child(even) td{background:#F7F9FC;}
+ol,ul{margin:0 0 10px 20px;font-size:14px;line-height:1.7;color:#1A2535;}
+.checklist{list-style:none;margin-left:0;}
+.checklist li{padding:5px 0;border-bottom:1px solid #EEF1F6;font-size:13px;}
+.checklist li:before{content:'☐ ';color:#1B3A5C;font-size:15px;}
+.code-box{background:#F7F9FC;border:1px solid #D0D8E4;border-left:4px solid #1B3A5C;border-radius:4px;padding:12px 14px;font-family:'Courier New',monospace;font-size:11px;white-space:pre-wrap;word-break:break-word;line-height:1.5;color:#1A2535;margin-bottom:12px;}
+.next-badge{display:inline-block;background:#E8EFF8;border:1px solid #B0C2DC;border-radius:12px;padding:3px 12px;font-size:12px;font-weight:700;color:#1B3A5C;}
+.ftr{background:#1B3A5C;padding:14px 28px;text-align:center;}
+.ftr p{color:rgba(255,255,255,0.6);font-size:11px;margin:0;}
+.badge-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+.badge{padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;border:1px solid;}
+.badge-blue{background:#E4EAF5;color:#1B3A5C;border-color:#B0C2DC;}
+.badge-gold{background:#FFF4DB;color:#8B5E00;border-color:#C8952A;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="phi">⚠ DO NOT ENTER PATIENT-IDENTIFIABLE INFORMATION — Clinical decision support tool only</div>
+  <div class="hdr">
+    <div class="hdr-inner">
+      <div class="logo">MFB</div>
+      <div>
+        <h1>Rehab Bed Selection Tool</h1>
+        <p>Weekly Rehab Tool Delivery · ISO Week 31 · 2026-07-29</p>
+      </div>
+    </div>
+  </div>
+  <div class="body">
+
+    <div class="section">
+      <h2>This Week's Tool</h2>
+      <div class="badge-row">
+        <span class="badge badge-blue">Week 31</span>
+        <span class="badge badge-gold">Topic 6 of 12: Bed Selection</span>
+        <span class="badge badge-blue">Standalone HTML · No external dependencies</span>
+      </div>
+      <p>Bed assignment is often done from memory or informal hallway conversation — leading to mismatches: a bariatric patient in a standard-weight-rated room, a high-elopement-risk patient in a distant hallway, or a ventilator-dependent admit in a room without vent infrastructure.</p>
+      <p>This tool standardizes the decision in under 60 seconds: enter 7–9 clinical parameters, get a prioritized bed type recommendation with rationale, conflict alerts, a pre-placement checklist, and a ready-to-copy Epic SmartPhrase.</p>
+    </div>
+
+    <div class="section">
+      <h2>Tool Overview</h2>
+      <table>
+        <tr><th>Element</th><th>Detail</th></tr>
+        <tr><td><strong>Target Users</strong></td><td>Admissions Coordinator, Charge RN, Bed Management, Access/Intake Team</td></tr>
+        <tr><td><strong>Use Context</strong></td><td>During admit/transfer acceptance when bed assignment is needed</td></tr>
+        <tr><td><strong>Inputs</strong></td><td>Weight, program, acuity, isolation type, mobility/lift, gender, 7 safety/equipment flags</td></tr>
+        <tr><td><strong>Output</strong></td><td>Bed type + flags + rationale + checklist + Epic SmartPhrase</td></tr>
+        <tr><td><strong>Downstream Action</strong></td><td>Charge RN confirms, notifies therapy, updates bed board, documents in Epic</td></tr>
+      </table>
+    </div>
+
+    <div class="section">
+      <h2>Bed Type Priority Hierarchy</h2>
+      <ol>
+        <li><strong>Vent-Capable Room</strong> — highest clinical priority</li>
+        <li><strong>Bariatric Room</strong> — weight ≥ 350 lbs or bariatric lift specified</li>
+        <li><strong>Airborne Isolation Room</strong> — negative pressure required</li>
+        <li><strong>Private Isolation Room</strong> — contact/droplet/protective precautions</li>
+        <li><strong>Behavioral/Safety Room</strong> — elopement, aggression, or self-harm flags</li>
+        <li><strong>High-Acuity / Step-Down Capable Bed</strong> — IV meds, telemetry, frequent monitoring</li>
+        <li><strong>Ceiling Lift-Equipped Room</strong> — when not already captured by bariatric</li>
+        <li><strong>Standard Rehab Bed</strong> — default when no flags present</li>
+      </ol>
+    </div>
+
+    <div class="section">
+      <h2>Epic SmartPhrase Pairing</h2>
+      <p>Suggested SmartPhrase name: <strong>.MFBBEDREC</strong></p>
+      <div class="code-box">BED SELECTION — REHAB ADMISSION
+Program: [Rehab Program]
+Recommended Bed Type: [Type]
+Additional Requirements: [if any]
+Medical Acuity: [low/moderate/high]
+Isolation: [type or none]
+Behavioral/Safety Flags: [list or None]
+Equipment Needs: [list or Standard]
+CONFLICTS: [if any]
+
+Rationale: [auto-generated clinical rationale]
+
+Pre-placement checklist completed per MFB Access protocol.
+Charge RN notified. Bed board updated.
+Clinical judgment governs final placement.</div>
+    </div>
+
+    <div class="section">
+      <h2>Testing Checklist</h2>
+      <ul class="checklist">
+        <li>Bariatric trigger: weight 350 → "Bariatric Room"; weight 349 → Standard</li>
+        <li>Vent flag: check "Ventilator dependent" → "Vent-Capable Room"</li>
+        <li>Priority: Vent + Bariatric → Vent-Capable Room primary, Bariatric as additional</li>
+        <li>Conflict: Vent + Bariatric → red conflict alert box appears</li>
+        <li>Isolation: Airborne → "Airborne Isolation Room (Negative Pressure)"</li>
+        <li>Behavioral: elopement OR aggression OR suicide → "Behavioral / Safety Room"</li>
+        <li>Copy button: copies SmartPhrase to clipboard</li>
+        <li>Reset: clears all fields and hides results</li>
+        <li>Print view: results visible, buttons hidden</li>
+        <li>Mobile: single column at &lt;520px width</li>
+        <li>PHI banner: sticky at top at all times</li>
+        <li>No localStorage: no PHI stored anywhere</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>Next-Iteration Ideas</h2>
+      <ul>
+        <li><strong>Bed Inventory Integration</strong> — Pull live bed board data (Epic API) to show available vs. occupied by type</li>
+        <li><strong>Shift Handoff Summary</strong> — Generate pending placements summary for charge nurse shift change</li>
+        <li><strong>Conflict Resolution Wizard</strong> — When conflicts flagged, suggest specific workarounds</li>
+        <li><strong>Roommate Matching Logic</strong> — Gender, program, behavioral compatibility scoring for shared rooms</li>
+        <li><strong>MFB Unit Map View</strong> — Visual floor plan overlay with room types and current status</li>
+        <li><strong>Audit Trail Export</strong> — CSV export for quality/access analytics</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>Deployment</h2>
+      <p>The standalone HTML tool (22,281 chars · 545 lines) is attached in the code block below and archived to GitHub at <code>11_MFB_Access_Tool/2026-07-29_mfb-bed-selection.html</code>. Save the file locally and open in any modern browser — no internet connection required.</p>
+    </div>
+
+    <p style="margin-top:8px;font-size:12px;color:#5A6A80;">
+      Next week (Week 32): <span class="next-badge">Liaison Communication Template</span>
+    </p>
+
+  </div>
+  <div class="ftr">
+    <p>MFB Rehab Tool Builder · Automated weekly delivery · ISO Week 31 · 2026-07-29<br>
+    Tools are clinical decision support only. No PHI should be entered. Not a substitute for clinical judgment.</p>
+  </div>
+</div>
+</body>
+</html>
